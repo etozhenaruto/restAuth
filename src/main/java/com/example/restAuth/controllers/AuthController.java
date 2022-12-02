@@ -4,10 +4,7 @@ import com.example.restAuth.configs.jwt.JwtUtils;
 import com.example.restAuth.models.ERole;
 import com.example.restAuth.models.Role;
 import com.example.restAuth.models.User;
-import com.example.restAuth.pojo.JwtResponse;
-import com.example.restAuth.pojo.LoginRequest;
-import com.example.restAuth.pojo.MessageResponse;
-import com.example.restAuth.pojo.SignupRequest;
+import com.example.restAuth.pojo.*;
 import com.example.restAuth.repository.RoleRepository;
 import com.example.restAuth.repository.UserRepository;
 import com.example.restAuth.service.UserDetailsImpl;
@@ -68,6 +65,7 @@ public class AuthController {
                 userDetails.getEmail(),
                 roles));
     }
+
     @PostMapping("/signup")
     public ResponseEntity<?> registerUser(@RequestBody SignupRequest signupRequest) {
 
