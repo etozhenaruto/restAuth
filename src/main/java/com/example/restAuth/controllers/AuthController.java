@@ -8,6 +8,7 @@ import com.example.restAuth.pojo.*;
 import com.example.restAuth.repository.RoleRepository;
 import com.example.restAuth.repository.UserRepository;
 import com.example.restAuth.service.UserDetailsImpl;
+import com.sun.xml.bind.v2.TODO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -55,6 +56,7 @@ public class AuthController {
         String jwt = jwtUtils.generateJwtToken(authentication);
 
         UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
+        // TODO РАЗОБРАТЬСЯ ЧТО ТАКОЕ ЭТО ЗА ГОВНО
         List<String> roles = userDetails.getAuthorities().stream()
                 .map(item -> item.getAuthority())
                 .collect(Collectors.toList());

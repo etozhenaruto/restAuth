@@ -1,17 +1,15 @@
 package com.example.restAuth.controllers;
 
 import com.example.restAuth.models.User;
+import com.example.restAuth.pojo.MessageResponse;
 import com.example.restAuth.pojo.UserResponse;
-import com.example.restAuth.service.UserDetailsImpl;
 import com.example.restAuth.service.UserDetailsServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
-import javax.websocket.server.PathParam;
 import java.util.List;
 
 @RestController
@@ -21,31 +19,44 @@ public class TestController {
 
     @Autowired
     UserDetailsServiceImpl userDetailsService;
+
     @GetMapping("/all")
     public String allAccess() {
         return "public API";
     }
 
-    @RequestMapping(value = "{name}", method = RequestMethod.GET)
-    public ResponseEntity<?> getUserByName(@PathParam("name") String name){
-        UserDetailsImpl userDetails = (UserDetailsImpl) userDetailsService.loadUserByUsername(name);
-        return ResponseEntity.ok(new UserResponse(userDetails.getId(), userDetails.getUsername(),userDetails.getEmail()));
+    @GetMapping("/users1")
+    public ResponseEntity<?> getUserByName(@RequestParam("name") String name){
+        User user = userDetailsService.findUserByUsername(name);
+        return new ResponseEntity<>(new UserResponse(
+                user.getId(),
+                user.getUsername(),
+                user.getEmail()),
+                HttpStatus.OK);
+    }
+    @GetMapping("/users2")
+    public ResponseEntity<?> getUserById(@RequestParam("id")Long id){
+        User user = userDetailsService.findUserById(id);
+        return new ResponseEntity<>(new UserResponse(
+                user.getId(),
+                user.getUsername(),
+                user.getEmail()),
+                HttpStatus.OK);
     }
 
-    @GetMapping("/id")
-    public ResponseEntity<?> getUserById(){
-        long i = 34;
-        UserDetailsImpl userDetails = (UserDetailsImpl) userDetailsService.findById(i);
-        return ResponseEntity.ok(new UserResponse(userDetails.getId(), userDetails.getUsername(),userDetails.getEmail()));
+    @DeleteMapping("/users3")
+    public ResponseEntity<?> deleteUsersById(@RequestParam("id")Long id){
+        userDetailsService.deleteUserById(id);
+        return new ResponseEntity<>(new MessageResponse("User deleted"),HttpStatus.OK);
     }
 
-    @GetMapping("/users")
-    @PreAuthorize("hasRole('ADMIN')")
+
+    @GetMapping("/users4")
     public ResponseEntity<List<User>> getAllUsers() {
-        List<User> users = userDetailsService.findAll();
-        System.out.println("allarm");
+        List<User> users = userDetailsService.findAllUsers();
         return new ResponseEntity<>(users, HttpStatus.OK);
     }
+
 
     @GetMapping("/user")
     @PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
