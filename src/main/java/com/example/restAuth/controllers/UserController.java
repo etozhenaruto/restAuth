@@ -13,9 +13,9 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/test/")
+@RequestMapping("/api/user/")
 @CrossOrigin(origins = "*", maxAge = 3600)
-public class TestController {
+public class UserController {
 
     @Autowired
     UserDetailsServiceImpl userDetailsService;
@@ -25,7 +25,8 @@ public class TestController {
         return "public API";
     }
 
-    @GetMapping("/users1")
+    @PreAuthorize("hasRole('MODERATOR') or hasRole('ADMIN')")
+    @GetMapping("/user-by-name")
     public ResponseEntity<?> getUserByName(@RequestParam("name") String name){
         User user = userDetailsService.findUserByUsername(name);
         return new ResponseEntity<>(new UserResponse(
@@ -34,7 +35,8 @@ public class TestController {
                 user.getEmail()),
                 HttpStatus.OK);
     }
-    @GetMapping("/users2")
+    @PreAuthorize("hasRole('USER') or hasRole('MODERATOR') or hasRole('ADMIN')")
+    @GetMapping("/user-by-id")
     public ResponseEntity<?> getUserById(@RequestParam("id")Long id){
         User user = userDetailsService.findUserById(id);
         return new ResponseEntity<>(new UserResponse(
@@ -44,35 +46,18 @@ public class TestController {
                 HttpStatus.OK);
     }
 
-    @DeleteMapping("/users3")
+    @PreAuthorize("hasRole('MODERATOR')")
+    @DeleteMapping("/delete-user")
     public ResponseEntity<?> deleteUsersById(@RequestParam("id")Long id){
         userDetailsService.deleteUserById(id);
         return new ResponseEntity<>(new MessageResponse("User deleted"),HttpStatus.OK);
     }
 
-
-    @GetMapping("/users4")
+    @GetMapping("/all-users")
+    @PreAuthorize("hasRole('USER') or hasRole('MODERATOR') or hasRole('ADMIN')")
     public ResponseEntity<List<User>> getAllUsers() {
         List<User> users = userDetailsService.findAllUsers();
         return new ResponseEntity<>(users, HttpStatus.OK);
     }
 
-
-    @GetMapping("/user")
-    @PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
-    public String userAccess() {
-        return "user API";
-    }
-
-    @GetMapping("/mod")
-    @PreAuthorize("hasRole('MODERATOR') or hasRole('ADMIN')")
-    public String moderatorAccess() {
-        return "moderator API";
-    }
-
-    @GetMapping("/admin")
-    @PreAuthorize("hasRole('ADMIN')")
-    public String adminAccess() {
-        return "admin API";
-    }
 }
