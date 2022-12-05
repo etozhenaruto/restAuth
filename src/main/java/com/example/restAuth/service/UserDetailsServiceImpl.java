@@ -1,22 +1,20 @@
 package com.example.restAuth.service;
 
 import com.example.restAuth.exception.NotFoundException;
-import com.example.restAuth.models.Role;
 import com.example.restAuth.models.User;
+import com.example.restAuth.pojo.UpdateUser;
+import com.example.restAuth.pojo.UserResponse;
 import com.example.restAuth.repository.UserRepository;
 import com.sun.istack.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
-import java.util.Set;
-import java.util.stream.Collectors;
 
 @Service
 public class UserDetailsServiceImpl implements UserDetailsService {
@@ -52,6 +50,16 @@ public class UserDetailsServiceImpl implements UserDetailsService {
         } else {
             throw new NotFoundException("User Not Found with id: " + id);
         }
+    }
+
+    public UserResponse updateUser(UpdateUser updateUser){
+        User user = findUserById(updateUser.getId());
+        user.setEmail(updateUser.getEmail());
+        if(!Objects.equals(user.getUsername(), updateUser.getUsername())){
+            throw new NotFoundException("ИМЯ МЕНЯТЬ НЕЛЬЗЯ ХИТРЫЙ ТЫ ЖУК");
+        }
+        userRepository.save(user);
+        return new UserResponse(user.getId(),user.getUsername(),user.getEmail());
     }
 
 }

@@ -2,6 +2,7 @@ package com.example.restAuth.controllers;
 
 import com.example.restAuth.models.User;
 import com.example.restAuth.pojo.MessageResponse;
+import com.example.restAuth.pojo.UpdateUser;
 import com.example.restAuth.pojo.UserResponse;
 import com.example.restAuth.service.UserDetailsServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -58,6 +59,13 @@ public class UserController {
     public ResponseEntity<List<User>> getAllUsers() {
         List<User> users = userDetailsService.findAllUsers();
         return new ResponseEntity<>(users, HttpStatus.OK);
+    }
+
+    @PutMapping("/update-user")
+    @PreAuthorize("hasRole('USER') or hasRole('MODERATOR') or hasRole('ADMIN')")
+    public ResponseEntity<UserResponse> updateUser(@RequestBody UpdateUser updateUser) {
+        System.out.println(updateUser);
+        return new ResponseEntity<>(userDetailsService.updateUser(updateUser), HttpStatus.OK);
     }
 
 }
