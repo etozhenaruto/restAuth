@@ -45,11 +45,13 @@ public class UserDetailsServiceImpl implements UserDetailsService {
                 .orElseThrow(() -> new NotFoundException("User not found with name: " + username));
     }
     public void deleteUserById(Long id){
-        if(userRepository.existsById(id)){
+        User user = userRepository.findById(id)
+                .orElseThrow(() -> new NotFoundException("User not found with id: " + id));
+        if (user.getActive()){
             userRepository.deleteById(id);
-        } else {
-            throw new NotFoundException("User Not Found with id: " + id);
-        }
+            user.setActive(false);
+            userRepository.save(user);
+            }
     }
 
     public UserResponse updateUser(UpdateUser updateUser){
@@ -59,7 +61,7 @@ public class UserDetailsServiceImpl implements UserDetailsService {
             throw new NotFoundException("ИМЯ МЕНЯТЬ НЕЛЬЗЯ ХИТРЫЙ ТЫ ЖУК");
         }
         userRepository.save(user);
-        return new UserResponse(user.getId(),user.getUsername(),user.getEmail());
+        return new UserResponse(user.getId(),user.getUsername(),user.getEmail(),user.getActive());
     }
 
 }

@@ -12,6 +12,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/user/")
@@ -33,7 +34,8 @@ public class UserController {
         return new ResponseEntity<>(new UserResponse(
                 user.getId(),
                 user.getUsername(),
-                user.getEmail()),
+                user.getEmail(),
+                user.getActive()),
                 HttpStatus.OK);
     }
     @PreAuthorize("hasRole('USER') or hasRole('MODERATOR') or hasRole('ADMIN')")
@@ -43,11 +45,12 @@ public class UserController {
         return new ResponseEntity<>(new UserResponse(
                 user.getId(),
                 user.getUsername(),
-                user.getEmail()),
+                user.getEmail(),
+                user.getActive()),
                 HttpStatus.OK);
     }
 
-    @PreAuthorize("hasRole('MODERATOR')")
+    @PreAuthorize("hasRole('MODERATOR')or hasRole('ADMIN')")
     @DeleteMapping("/delete-user")
     public ResponseEntity<?> deleteUsersById(@RequestParam("id")Long id){
         userDetailsService.deleteUserById(id);
@@ -57,14 +60,17 @@ public class UserController {
     @GetMapping("/all-users")
     @PreAuthorize("hasRole('USER') or hasRole('MODERATOR') or hasRole('ADMIN')")
     public ResponseEntity<List<User>> getAllUsers() {
-        List<User> users = userDetailsService.findAllUsers();
+        List<User> users = userDetailsService
+                .findAllUsers()
+                .stream()
+                .filter(User::getActive)
+                .collect(Collectors.toList());
         return new ResponseEntity<>(users, HttpStatus.OK);
     }
 
     @PutMapping("/update-user")
     @PreAuthorize("hasRole('USER') or hasRole('MODERATOR') or hasRole('ADMIN')")
     public ResponseEntity<UserResponse> updateUser(@RequestBody UpdateUser updateUser) {
-        System.out.println(updateUser);
         return new ResponseEntity<>(userDetailsService.updateUser(updateUser), HttpStatus.OK);
     }
 

@@ -1,7 +1,5 @@
 package com.example.restAuth.pojo;
 
-
-
 import java.util.List;
 
 

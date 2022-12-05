@@ -5,10 +5,20 @@ public class UserResponse {
     private String name;
     private String email;
 
-    public UserResponse(Long id, String name, String email) {
+    private Boolean active;
+
+    public UserResponse(Long id, String name, String email, Boolean active) {
         this.id = id;
         this.name = name;
         this.email = email;
+    }
+
+    public Boolean getActive() {
+        return active;
+    }
+
+    public void setActive(Boolean active) {
+        this.active = active;
     }
 
     public Long getId() {
